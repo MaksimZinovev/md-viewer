@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Markdown Viewer](assets/icon.jpg)
+![Markdown Viewer](assets/icon.webp)
 
 **A modern, feature-rich Markdown editor and viewer with Mermaid diagram and MathJax support.**
 
@@ -11,7 +11,7 @@
 [![HTML](https://img.shields.io/badge/HTML-14.3%25-orange?style=flat-square&logo=html5)](https://github.com/akshitsutharr/md-viewer)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 
-[Live Demo](#live-demo) • [Features](#features) • [Getting Started](#getting-started) • [Documentation](#documentation)
+[Live Demo](https://markdown-view.vercel.app/) • [Features](#features) • [Getting Started](#getting-started) • [Documentation](#documentation)
 
 </div>
 
@@ -98,9 +98,8 @@ Inline: `$E = mc^2$`
 Block:
 
 ```
-$$
-\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
-$$
+$$\int_a^b f(x)\,dx = F(b) - F(a)$$
+$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$
 ```
 
 ### Import and Export
