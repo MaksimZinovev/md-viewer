@@ -663,7 +663,118 @@ graph TD
     this.value = "";
   });
 
-  exportMd.addEventListener("click", function () {
+  function createStatusOverlay(message) {
+    const overlay = document.createElement("div");
+    overlay.className = "status-overlay";
+    overlay.innerHTML = `
+      <div class="status-overlay-card">
+        <div class="status-overlay-spinner" aria-hidden="true"></div>
+        <p class="status-overlay-text">${message}</p>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    return {
+      update(text) {
+        const el = overlay.querySelector(".status-overlay-text");
+        if (el) el.textContent = text;
+      },
+      remove() {
+        if (overlay.parentNode) {
+          overlay.parentNode.removeChild(overlay);
+        }
+      }
+    };
+  }
+
+  async function waitForImages(container) {
+    const images = Array.from(container.querySelectorAll("img"));
+    if (images.length === 0) return;
+
+    await Promise.all(
+      images.map(
+        (img) =>
+          new Promise((resolve) => {
+            if (img.complete) {
+              resolve();
+              return;
+            }
+            img.addEventListener("load", resolve, { once: true });
+            img.addEventListener("error", resolve, { once: true });
+          })
+      )
+    );
+  }
+
+  function hasUnsupportedCanvasColor(value) {
+    return typeof value === "string" && value.includes("color(");
+  }
+
+  function sanitizePdfElementForCanvas(container, theme) {
+    const palette = theme === "dark"
+      ? {
+          text: "#e5e7eb",
+          bg: "#0f141c",
+          border: "#3b4657",
+          codeBg: "#1a2431"
+        }
+      : {
+          text: "#1c1f26",
+          bg: "#fcf6ee",
+          border: "#d2c1ad",
+          codeBg: "#f3ece2"
+        };
+
+    const nodes = [container, ...container.querySelectorAll("*")];
+    nodes.forEach((el) => {
+      const cs = window.getComputedStyle(el);
+
+      if (hasUnsupportedCanvasColor(cs.color)) {
+        el.style.color = palette.text;
+      }
+      if (hasUnsupportedCanvasColor(cs.backgroundColor)) {
+        el.style.backgroundColor = palette.bg;
+      }
+      if (hasUnsupportedCanvasColor(cs.borderTopColor)) {
+        el.style.borderTopColor = palette.border;
+      }
+      if (hasUnsupportedCanvasColor(cs.borderRightColor)) {
+        el.style.borderRightColor = palette.border;
+      }
+      if (hasUnsupportedCanvasColor(cs.borderBottomColor)) {
+        el.style.borderBottomColor = palette.border;
+      }
+      if (hasUnsupportedCanvasColor(cs.borderLeftColor)) {
+        el.style.borderLeftColor = palette.border;
+      }
+      if (hasUnsupportedCanvasColor(cs.outlineColor)) {
+        el.style.outlineColor = palette.border;
+      }
+
+      if (typeof cs.boxShadow === "string" && cs.boxShadow.includes("color(")) {
+        el.style.boxShadow = "none";
+      }
+      if (typeof cs.textShadow === "string" && cs.textShadow.includes("color(")) {
+        el.style.textShadow = "none";
+      }
+      if (typeof cs.backgroundImage === "string" && cs.backgroundImage.includes("color(")) {
+        el.style.backgroundImage = "none";
+      }
+      if (typeof cs.filter === "string" && cs.filter !== "none") {
+        el.style.filter = "none";
+      }
+      if (typeof cs.backdropFilter === "string" && cs.backdropFilter !== "none") {
+        el.style.backdropFilter = "none";
+      }
+    });
+
+    container.querySelectorAll("pre, code").forEach((el) => {
+      el.style.backgroundColor = palette.codeBg;
+      el.style.borderColor = palette.border;
+    });
+  }
+
+  exportMd.addEventListener("click", function (event) {
+    event.preventDefault();
     try {
       const blob = new Blob([markdownEditor.value], {
         type: "text/markdown;charset=utf-8",
@@ -675,7 +786,8 @@ graph TD
     }
   });
 
-  exportHtml.addEventListener("click", function () {
+  exportHtml.addEventListener("click", function (event) {
+    event.preventDefault();
     try {
       const markdown = markdownEditor.value;
       const html = marked.parse(markdown);
@@ -1201,28 +1313,18 @@ graph TD
   // End Oversized Graphics Scaling Functions
   // ============================================
 
-  exportPdf.addEventListener("click", async function () {
+  exportPdf.addEventListener("click", async function (event) {
+    event.preventDefault();
+
+    let tempElement = null;
+    let captureHost = null;
+    let overlay = null;
+    const originalText = exportPdf.innerHTML;
+
     try {
-      const originalText = exportPdf.innerHTML;
       exportPdf.innerHTML = '<i class="bi bi-hourglass-split"></i> Generating...';
-      exportPdf.disabled = true;
-
-      const progressContainer = document.createElement('div');
-      progressContainer.style.position = 'fixed';
-      progressContainer.style.top = '50%';
-      progressContainer.style.left = '50%';
-      progressContainer.style.transform = 'translate(-50%, -50%)';
-      progressContainer.style.padding = '15px 20px';
-      progressContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-      progressContainer.style.color = 'white';
-      progressContainer.style.borderRadius = '5px';
-      progressContainer.style.zIndex = '9999';
-      progressContainer.style.textAlign = 'center';
-
-      const statusText = document.createElement('div');
-      statusText.textContent = 'Generating PDF...';
-      progressContainer.appendChild(statusText);
-      document.body.appendChild(progressContainer);
+      exportPdf.classList.add("is-busy");
+      overlay = createStatusOverlay("Preparing PDF...");
 
       const markdown = markdownEditor.value;
       const html = marked.parse(markdown);
@@ -1231,24 +1333,39 @@ graph TD
         ADD_ATTR: ['id', 'class', 'style', 'viewBox', 'd', 'fill', 'stroke', 'transform', 'marker-end', 'marker-start']
       });
 
-      const tempElement = document.createElement("div");
+      tempElement = document.createElement("div");
       tempElement.className = "markdown-body pdf-export";
       tempElement.innerHTML = sanitizedHtml;
-      tempElement.style.padding = "20px";
-      tempElement.style.width = "210mm";
+      tempElement.style.padding = "16mm";
+      tempElement.style.width = "190mm";
       tempElement.style.margin = "0 auto";
       tempElement.style.fontSize = "14px";
-      tempElement.style.position = "fixed";
-      tempElement.style.left = "-9999px";
+      tempElement.style.position = "relative";
+      tempElement.style.left = "0";
       tempElement.style.top = "0";
 
       const currentTheme = document.documentElement.getAttribute("data-theme");
-      tempElement.style.backgroundColor = currentTheme === "dark" ? "#0d1117" : "#ffffff";
-      tempElement.style.color = currentTheme === "dark" ? "#c9d1d9" : "#24292e";
+      tempElement.style.backgroundColor = currentTheme === "dark" ? "#0f141c" : "#fcf6ee";
+      tempElement.style.color = currentTheme === "dark" ? "#e5e7eb" : "#1c1f26";
 
-      document.body.appendChild(tempElement);
+      captureHost = document.createElement("div");
+      captureHost.style.position = "fixed";
+      captureHost.style.left = "0";
+      captureHost.style.top = "0";
+      captureHost.style.width = "100vw";
+      captureHost.style.maxHeight = "100vh";
+      captureHost.style.overflow = "auto";
+      captureHost.style.pointerEvents = "none";
+      captureHost.style.zIndex = "-1";
+      captureHost.style.background = "transparent";
 
-      await new Promise(resolve => setTimeout(resolve, 200));
+      captureHost.appendChild(tempElement);
+      document.body.appendChild(captureHost);
+
+      await waitForImages(tempElement);
+      await new Promise((resolve) => setTimeout(resolve, 120));
+
+      overlay.update("Rendering diagrams and equations...");
 
       try {
         await mermaid.run({
@@ -1266,100 +1383,112 @@ graph TD
           console.warn("MathJax rendering issue:", mathJaxError);
         }
 
-        // Hide MathJax assistive elements that cause duplicate text in PDF
-        // These are screen reader elements that html2canvas captures as visible
-        // Use multiple CSS properties to ensure html2canvas doesn't render them
         const assistiveElements = tempElement.querySelectorAll('mjx-assistive-mml');
-        assistiveElements.forEach(el => {
-          el.style.display = 'none';
-          el.style.visibility = 'hidden';
-          el.style.position = 'absolute';
-          el.style.width = '0';
-          el.style.height = '0';
-          el.style.overflow = 'hidden';
-          el.remove(); // Remove entirely from DOM
-        });
+        assistiveElements.forEach(el => el.remove());
 
-        // Also hide any MathJax script elements that might contain source
         const mathScripts = tempElement.querySelectorAll('script[type*="math"], script[type*="tex"]');
         mathScripts.forEach(el => el.remove());
       }
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 120));
+      overlay.update("Creating downloadable PDF...");
 
-      // Analyze and apply page-breaks for graphics (Story 1.1 + 1.2)
+      // Keep page-aware adjustments for large graphics before export.
       const pageBreakAnalysis = applyPageBreaksWithCascade(tempElement, PAGE_CONFIG);
-
-      // Scale oversized graphics that can't fit on a single page (Story 1.3)
       if (pageBreakAnalysis.oversizedElements && pageBreakAnalysis.pageHeightPx) {
         handleOversizedElements(pageBreakAnalysis.oversizedElements, pageBreakAnalysis.pageHeightPx);
       }
 
-      const pdfOptions = {
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-        compress: true,
-        hotfixes: ["px_scaling"]
-      };
-
-      const pdf = new jspdf.jsPDF(pdfOptions);
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 15;
-      const contentWidth = pageWidth - (margin * 2);
+      // html2canvas cannot parse newer Color 4 outputs (for example color(srgb ...)).
+      sanitizePdfElementForCanvas(tempElement, currentTheme);
 
       const canvas = await html2canvas(tempElement, {
         scale: 2,
         useCORS: true,
         allowTaint: true,
         logging: false,
-        windowWidth: 1000,
+        backgroundColor: currentTheme === "dark" ? "#0f141c" : "#fcf6ee",
+        windowWidth: tempElement.scrollWidth,
         windowHeight: tempElement.scrollHeight
       });
 
-      const scaleFactor = canvas.width / contentWidth;
-      const imgHeight = canvas.height / scaleFactor;
-      const pagesCount = Math.ceil(imgHeight / (pageHeight - margin * 2));
+      const pdf = new jspdf.jsPDF({
+        unit: "mm",
+        format: "a4",
+        orientation: "portrait",
+        compress: true,
+        hotfixes: ["px_scaling"]
+      });
 
-      for (let page = 0; page < pagesCount; page++) {
-        if (page > 0) pdf.addPage();
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 10;
+      const contentWidth = pageWidth - margin * 2;
+      const contentHeight = pageHeight - margin * 2;
 
-        const sourceY = page * (pageHeight - margin * 2) * scaleFactor;
-        const sourceHeight = Math.min(canvas.height - sourceY, (pageHeight - margin * 2) * scaleFactor);
-        const destHeight = sourceHeight / scaleFactor;
+      const pxToMm = contentWidth / canvas.width;
+      const pageCanvasHeight = Math.floor(contentHeight / pxToMm);
+      const totalPages = Math.max(1, Math.ceil(canvas.height / pageCanvasHeight));
 
-        const pageCanvas = document.createElement('canvas');
+      for (let i = 0; i < totalPages; i++) {
+        if (i > 0) {
+          pdf.addPage();
+        }
+
+        const startY = i * pageCanvasHeight;
+        const sliceHeight = Math.min(pageCanvasHeight, canvas.height - startY);
+
+        const pageCanvas = document.createElement("canvas");
         pageCanvas.width = canvas.width;
-        pageCanvas.height = sourceHeight;
+        pageCanvas.height = sliceHeight;
 
-        const ctx = pageCanvas.getContext('2d');
-        ctx.drawImage(canvas, 0, sourceY, canvas.width, sourceHeight, 0, 0, canvas.width, sourceHeight);
+        const ctx = pageCanvas.getContext("2d");
+        if (!ctx) {
+          throw new Error("Unable to create PDF canvas context");
+        }
 
-        const imgData = pageCanvas.toDataURL('image/png');
-        pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, destHeight);
+        ctx.drawImage(
+          canvas,
+          0,
+          startY,
+          canvas.width,
+          sliceHeight,
+          0,
+          0,
+          canvas.width,
+          sliceHeight
+        );
+
+        const imgData = pageCanvas.toDataURL("image/jpeg", 0.98);
+        const renderHeightMm = sliceHeight * pxToMm;
+        pdf.addImage(imgData, "JPEG", margin, margin, contentWidth, renderHeightMm);
       }
 
       pdf.save("document.pdf");
 
-      statusText.textContent = 'Download successful!';
+      overlay.update("PDF is ready");
       setTimeout(() => {
-        document.body.removeChild(progressContainer);
-      }, 1500);
+        if (overlay) {
+          overlay.remove();
+          overlay = null;
+        }
+      }, 700);
 
-      document.body.removeChild(tempElement);
       exportPdf.innerHTML = originalText;
-      exportPdf.disabled = false;
-
+      exportPdf.classList.remove("is-busy");
     } catch (error) {
       console.error("PDF export failed:", error);
       alert("PDF export failed: " + error.message);
-      exportPdf.innerHTML = '<i class="bi bi-file-earmark-pdf"></i> Export';
-      exportPdf.disabled = false;
-
-      const progressContainer = document.querySelector('div[style*="Preparing PDF"]');
-      if (progressContainer) {
-        document.body.removeChild(progressContainer);
+      if (overlay) {
+        overlay.remove();
+      }
+      exportPdf.innerHTML = originalText;
+      exportPdf.classList.remove("is-busy");
+    } finally {
+      if (captureHost && captureHost.parentNode) {
+        captureHost.parentNode.removeChild(captureHost);
+      } else if (tempElement && tempElement.parentNode) {
+        tempElement.parentNode.removeChild(tempElement);
       }
     }
   });

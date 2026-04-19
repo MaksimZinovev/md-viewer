@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A premium markdown editor with live preview, diagrams, equations, and reliable exports.">
     <!-- CODE BY AKSHIT SUTHAR -->
-    <title>View Your Markdown</title>
+    <title>ViewMD</title>
     <link href="assets/icon.jpg" rel="icon" type="image/jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,13 +36,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 </head>
 <body>
+    <a class="skip-link" href="#markdown-editor">Skip to editor</a>
     <div class="app-container">
         <header class="app-header">
             <div class="container-fluid d-flex justify-content-between align-items-center header-container">
                 <!-- Left section: Logo, GitHub, Stats -->
                 <div class="d-flex align-items-center header-left">
                     <span aria-hidden="true"><img id="app-logo" src="assets/file.png" alt="App Logo" width="38" height="38" loading="lazy"></span>
-                    <h1 class="h4 mb-0 ms-3">MD Viewer</h1>
+                    <h1 class="h4 mb-0 ms-3">ViewMD</h1>
                     <a href="https://github.com/akshitsutharr/md-viewer/" class="github-link ms-3" title="View on GitHub" target="_blank" rel="noopener noreferrer">
                         <i class="bi bi-github"></i>
                     </a>
@@ -189,7 +191,7 @@
             <p class="mb-0"><i class="bi bi-cloud-arrow-up me-2"></i>Drop your Markdown file here or click to browse</p>
         </div>
 
-        <div class="content-container">
+        <main class="content-container" aria-label="Editor and preview workspace">
             <div class="editor-pane">
                 <textarea id="markdown-editor" placeholder="Type or paste your Markdown here..."></textarea>
             </div>
@@ -200,7 +202,7 @@
             <div class="preview-pane">
                 <div id="markdown-preview" class="markdown-body"></div>
             </div>
-        </div>
+        </main>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
