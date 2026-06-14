@@ -26,28 +26,11 @@ If the audio doesn't supply a field, mark it `—` rather than omitting it.
 
 ---
 
-## 2. Mermaid Theme Init (mandatory, always immediately after Identity Card)
-
-Place this block verbatim, wrapped in a fenced code block so VS Code and other renderers parse it:
-
-````markdown
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor':'#3B7DC4','primaryTextColor':'#ffffff','primaryBorderColor':'#1E4D7A','lineColor':'#333333','secondaryColor':'#D4760A','secondaryTextColor':'#ffffff','tertiaryColor':'#E8E8E8','tertiaryTextColor':'#1a1a1a','fontSize':'14px'}}}%%
-```
-````
-
-**Why these values:**
-- `primaryColor` darkened to `#3B7DC4` — white text (`#ffffff`) passes WCAG AA contrast (4.6:1).
-- `secondaryColor` darkened to `#D4760A` — white text passes WCAG AA (4.5:1). The old `#F5A623` was too light and caused white-on-light illegibility.
-- `secondaryTextColor` and `tertiaryTextColor` are now explicitly set — Mermaid no longer auto-guesses and gets it wrong.
-- `lineColor` darkened to `#333` — visible against both white and light-gray backgrounds.
-- `tertiaryColor` lightened to `#E8E8E8` with dark text — safe for any node that falls back to tertiary.
-
----
-
-## 2b. Mermaid Syntax Rules (mandatory)
+## 2. Mermaid Syntax Rules (mandatory)
 
 Every `mermaid` code block MUST satisfy these rules — invalid syntax produces a red "Syntax error in text" badge in the rendered output.
+
+**Do not include a `%%{init:%%` block.** Mermaid's built-in `default` and `dark` themes handle light/dark adaptation automatically; a custom init block would force one palette and break the theme switch.
 
 | Rule | Wrong ✗ | Right ✓ | Why |
 |------|----------|---------|-----|
@@ -93,7 +76,7 @@ Every content section follows this exact two-layer structure — no exceptions, 
 
 **CRITICAL — Blank line rule:** A blank line MUST follow `<details>` and `<summary>` tags. Without it, Markdown renderers treat all inner content as inline HTML, collapsing line breaks and breaking bullet lists into one continuous string.
 
-**Separator rule:** Place a `---` horizontal rule between every section (after `</details>`, before the next `##`), and one `---` between the Identity Card + Mermaid init and the first content section. This makes the note scannable without costing many lines.
+**Separator rule:** Place a `---` horizontal rule between every section (after `</details>`, before the next `##`), and one `---` between the Identity Card and the first content section. This makes the note scannable without costing many lines.
 
 **Correct pattern (copy exactly):**
 
@@ -103,7 +86,6 @@ Every content section follows this exact two-layer structure — no exceptions, 
 | ...     |  ...             | ...     |
 
 ```mermaid
-%%{init: ... }%%
 ```
 
 ---
@@ -148,7 +130,7 @@ Repeat the correct pattern for every semantic chunk. The reader sees only TL;DR 
 
 ## 5. Accessibility & Aesthetics Rules
 
-- **Color contrast:** All Mermaid nodes must use dark text on light backgrounds or light text on dark backgrounds — never mid-on-mid. The theme init in Section 2 guarantees this; do not override with inline `style` that breaks contrast.
+- **Color contrast:** All Mermaid nodes must use dark text on light backgrounds or light text on dark backgrounds — never mid-on-mid. Mermaid's built-in `default` and `dark` themes guarantee this; do not override with inline `style` that breaks contrast.
 - **If you use inline `style` on a node:** Always pair a light fill with `color:#1a1a1a` or a dark fill with `color:#ffffff`. Example: `style C fill:#D4760A,color:#ffffff`
 - **Mermaid identifiers:** All node IDs, axis IDs, and curve IDs MUST be ASCII (`[a-zA-Z_][a-zA-Z0-9_]*`). Use quoted labels for display text in any script: `A["Кириллица"]` not `Кириллица`. This is a Mermaid parser constraint, not a style preference.
 - **Heading hierarchy:** Exactly one `#` (title), then `##` for sections. No `###` or deeper — keeps structure flat and scannable.
@@ -162,7 +144,6 @@ Repeat the correct pattern for every semantic chunk. The reader sees only TL;DR 
 | Zone | Max Lines |
 |---|---|
 | Identity card | 4 |
-| Mermaid theme init block | 5 |
 | TL;DR summaries (all combined) | ~10 |
 | One `<details>` block per semantic chunk | ~8 each |
 | Section separators (`---`) | ~5 |
