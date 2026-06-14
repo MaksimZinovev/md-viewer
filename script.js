@@ -69,25 +69,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	// ── Theme system ──
 	const THEMES = [
-		"light",
-		"dark",
-		"solarized-light",
-		"solarized",
-		"github",
-		"dracula",
-		"nord",
-		"catppuccin",
-		"monokai",
-		"rose-pine",
+		"light", "dark", "solarized-light", "solarized",
+		"github", "dracula", "nord", "catppuccin", "monokai", "rose-pine",
+		"warm", "warm-dark", "mono", "mono-dark",
 	];
 	const DARK_THEMES = new Set([
-		"dark",
-		"solarized",
-		"dracula",
-		"nord",
-		"catppuccin",
-		"monokai",
-		"rose-pine",
+		"dark", "solarized", "dracula", "nord", "catppuccin",
+		"monokai", "rose-pine", "warm-dark", "mono-dark",
 	]);
 
 	function applyTheme(theme) {
@@ -95,8 +83,10 @@ document.addEventListener("DOMContentLoaded", () => {
 		localStorage.setItem("md-viewer-theme", theme);
 		renderMarkdown();
 
-		// Update mermaid
-		initMermaid();
+		// Update mermaid (deferred if initMermaid not yet defined)
+		if (typeof initMermaid === "function") {
+			initMermaid();
+		}
 
 		// Update highlight.js stylesheet
 		const hljsLink = document.getElementById("highlight-theme");
@@ -150,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 	});
 
-	const initMermaid = () => {
+	function initMermaid() {
 		const currentTheme = document.documentElement.getAttribute("data-theme");
 		const mermaidTheme = DARK_THEMES.has(currentTheme) ? "dark" : "default";
 
@@ -161,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			flowchart: { useMaxWidth: true, htmlLabels: true },
 			fontSize: 16,
 		});
-	};
+	}
 
 	try {
 		initMermaid();

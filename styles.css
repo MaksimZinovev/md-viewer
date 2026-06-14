@@ -1027,6 +1027,114 @@ a:focus {
 	color: #657b83;
 }
 
+/* ── Warm ── */
+[data-theme="warm"] .markdown-body {
+	color-scheme: light;
+	--color-prettylights-syntax-comment: #8b7e6a;
+	--color-prettylights-syntax-constant: #c95d24;
+	--color-prettylights-syntax-entity: #1b6258;
+	--color-prettylights-syntax-keyword: #c95d24;
+	--color-prettylights-syntax-string: #1b6258;
+	--color-prettylights-syntax-variable: #c95d24;
+	--color-fg-default: #1c1f26;
+	--color-fg-muted: #6b6058;
+	--color-fg-subtle: #a09585;
+	--color-canvas-default: #fffdf8;
+	--color-canvas-subtle: #f7f1e8;
+	--color-border-default: #d8cdbd;
+	--color-border-muted: #e8dfd2;
+	--color-neutral-muted: rgba(201,93,36,0.12);
+	--color-accent-fg: #c95d24;
+	--color-accent-emphasis: #c95d24;
+	--color-danger-fg: #d73a49;
+}
+[data-theme="warm"] .markdown-body table tr { background-color: var(--table-bg); }
+[data-theme="warm"] .markdown-body table tr:nth-child(2n) { background-color: #faf5ed; }
+[data-theme="warm"] .markdown-body pre { background-color: var(--code-bg); }
+[data-theme="warm"] .markdown-body code { background-color: var(--code-bg); }
+[data-theme="warm"] .hljs { color: #1c1f26; }
+
+/* ── Warm Dark ── */
+[data-theme="warm-dark"] .markdown-body {
+	color-scheme: dark;
+	--color-prettylights-syntax-comment: #5a697d;
+	--color-prettylights-syntax-constant: #e27a43;
+	--color-prettylights-syntax-entity: #4cbfae;
+	--color-prettylights-syntax-keyword: #e27a43;
+	--color-prettylights-syntax-string: #4cbfae;
+	--color-prettylights-syntax-variable: #e27a43;
+	--color-fg-default: #edf1f8;
+	--color-fg-muted: #8b95a5;
+	--color-fg-subtle: #3d4b5f;
+	--color-canvas-default: #13171d;
+	--color-canvas-subtle: #1a2431;
+	--color-border-default: #2f3a49;
+	--color-border-muted: #252e3b;
+	--color-neutral-muted: rgba(226,122,67,0.15);
+	--color-accent-fg: #e27a43;
+	--color-accent-emphasis: #e27a43;
+	--color-danger-fg: #f85149;
+}
+[data-theme="warm-dark"] .markdown-body table tr { background-color: var(--table-bg); }
+[data-theme="warm-dark"] .markdown-body table tr:nth-child(2n) { background-color: #182030; }
+[data-theme="warm-dark"] .markdown-body pre { background-color: var(--code-bg); }
+[data-theme="warm-dark"] .markdown-body code { background-color: var(--code-bg); }
+[data-theme="warm-dark"] .hljs { color: #edf1f8; }
+
+/* ── Mono ── */
+[data-theme="mono"] .markdown-body {
+	color-scheme: light;
+	--color-prettylights-syntax-comment: #6a6a6a;
+	--color-prettylights-syntax-constant: #4b4b4b;
+	--color-prettylights-syntax-entity: #4b4b4b;
+	--color-prettylights-syntax-keyword: #171717;
+	--color-prettylights-syntax-string: #4b4b4b;
+	--color-prettylights-syntax-variable: #4b4b4b;
+	--color-fg-default: #171717;
+	--color-fg-muted: #6a6a6a;
+	--color-fg-subtle: #9a9a9a;
+	--color-canvas-default: #f4f4f4;
+	--color-canvas-subtle: #eaeaea;
+	--color-border-default: #c8c8c8;
+	--color-border-muted: #d8d8d8;
+	--color-neutral-muted: rgba(75,75,75,0.15);
+	--color-accent-fg: #4b4b4b;
+	--color-accent-emphasis: #4b4b4b;
+	--color-danger-fg: #4b4b4b;
+}
+[data-theme="mono"] .markdown-body table tr { background-color: var(--table-bg); }
+[data-theme="mono"] .markdown-body table tr:nth-child(2n) { background-color: #efefef; }
+[data-theme="mono"] .markdown-body pre { background-color: var(--code-bg); }
+[data-theme="mono"] .markdown-body code { background-color: var(--code-bg); }
+[data-theme="mono"] .hljs { color: #171717; }
+
+/* ── Mono Dark ── */
+[data-theme="mono-dark"] .markdown-body {
+	color-scheme: dark;
+	--color-prettylights-syntax-comment: #6a6a6a;
+	--color-prettylights-syntax-constant: #a1a1a1;
+	--color-prettylights-syntax-entity: #a1a1a1;
+	--color-prettylights-syntax-keyword: #ebebeb;
+	--color-prettylights-syntax-string: #a1a1a1;
+	--color-prettylights-syntax-variable: #a1a1a1;
+	--color-fg-default: #ebebeb;
+	--color-fg-muted: #8a8a8a;
+	--color-fg-subtle: #4a4a4a;
+	--color-canvas-default: #101010;
+	--color-canvas-subtle: #171717;
+	--color-border-default: #3c3c3c;
+	--color-border-muted: #2a2a2a;
+	--color-neutral-muted: rgba(161,161,161,0.15);
+	--color-accent-fg: #a1a1a1;
+	--color-accent-emphasis: #a1a1a1;
+	--color-danger-fg: #a1a1a1;
+}
+[data-theme="mono-dark"] .markdown-body table tr { background-color: var(--table-bg); }
+[data-theme="mono-dark"] .markdown-body table tr:nth-child(2n) { background-color: #1a1a1a; }
+[data-theme="mono-dark"] .markdown-body pre { background-color: var(--code-bg); }
+[data-theme="mono-dark"] .markdown-body code { background-color: var(--code-bg); }
+[data-theme="mono-dark"] .hljs { color: #ebebeb; }
+
 /* ── Theme dropdown ── */
 .theme-dropdown {
 	position: absolute;
@@ -1687,9 +1795,10 @@ a:focus {
 
 /* =========================================================
    REDESIGN LAYER 2026 - premium editorial UI/UX refresh
+   Converted from :root override to named theme [data-theme="warm"]
    ========================================================= */
 
-:root {
+[data-theme="warm"] {
 	--font-sans: "Outfit", "Space Grotesk", "Segoe UI", sans-serif;
 	--font-mono: "IBM Plex Mono", "Consolas", monospace;
 	--bg-color: #f7f1e8;
@@ -1729,7 +1838,9 @@ a:focus {
 	--shadow-lg: 0 30px 70px rgba(34, 23, 14, 0.18);
 }
 
-[data-theme="dark"] {
+[data-theme="warm-dark"] {
+	--font-sans: "Outfit", "Space Grotesk", "Segoe UI", sans-serif;
+	--font-mono: "IBM Plex Mono", "Consolas", monospace;
 	--bg-color: #13171d;
 	--bg-gradient:
 		radial-gradient(
@@ -2061,10 +2172,10 @@ body::after {
 }
 
 /* =========================================================
-   MONOCHROME OVERRIDE - black/gray only, no gradients
+   MONOCHROME OVERRIDE - converted to named theme [data-theme="mono"]
    ========================================================= */
 
-:root {
+[data-theme="mono"] {
 	--bg-color: #efefef;
 	--bg-gradient: none;
 	--surface: #f6f6f6;
@@ -2091,7 +2202,7 @@ body::after {
 	--shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.16);
 }
 
-[data-theme="dark"] {
+[data-theme="mono-dark"] {
 	--bg-color: #101010;
 	--bg-gradient: none;
 	--surface: #171717;
