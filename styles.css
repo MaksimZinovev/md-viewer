@@ -1043,16 +1043,26 @@ a:focus {
 	--color-canvas-subtle: #f7f1e8;
 	--color-border-default: #d8cdbd;
 	--color-border-muted: #e8dfd2;
-	--color-neutral-muted: rgba(201,93,36,0.12);
+	--color-neutral-muted: rgba(201, 93, 36, 0.12);
 	--color-accent-fg: #c95d24;
 	--color-accent-emphasis: #c95d24;
 	--color-danger-fg: #d73a49;
 }
-[data-theme="warm"] .markdown-body table tr { background-color: var(--table-bg); }
-[data-theme="warm"] .markdown-body table tr:nth-child(2n) { background-color: #faf5ed; }
-[data-theme="warm"] .markdown-body pre { background-color: var(--code-bg); }
-[data-theme="warm"] .markdown-body code { background-color: var(--code-bg); }
-[data-theme="warm"] .hljs { color: #1c1f26; }
+[data-theme="warm"] .markdown-body table tr {
+	background-color: var(--table-bg);
+}
+[data-theme="warm"] .markdown-body table tr:nth-child(2n) {
+	background-color: #faf5ed;
+}
+[data-theme="warm"] .markdown-body pre {
+	background-color: var(--code-bg);
+}
+[data-theme="warm"] .markdown-body code {
+	background-color: var(--code-bg);
+}
+[data-theme="warm"] .hljs {
+	color: #1c1f26;
+}
 
 /* ── Warm Dark ── */
 [data-theme="warm-dark"] .markdown-body {
@@ -1070,16 +1080,26 @@ a:focus {
 	--color-canvas-subtle: #1a2431;
 	--color-border-default: #2f3a49;
 	--color-border-muted: #252e3b;
-	--color-neutral-muted: rgba(226,122,67,0.15);
+	--color-neutral-muted: rgba(226, 122, 67, 0.15);
 	--color-accent-fg: #e27a43;
 	--color-accent-emphasis: #e27a43;
 	--color-danger-fg: #f85149;
 }
-[data-theme="warm-dark"] .markdown-body table tr { background-color: var(--table-bg); }
-[data-theme="warm-dark"] .markdown-body table tr:nth-child(2n) { background-color: #182030; }
-[data-theme="warm-dark"] .markdown-body pre { background-color: var(--code-bg); }
-[data-theme="warm-dark"] .markdown-body code { background-color: var(--code-bg); }
-[data-theme="warm-dark"] .hljs { color: #edf1f8; }
+[data-theme="warm-dark"] .markdown-body table tr {
+	background-color: var(--table-bg);
+}
+[data-theme="warm-dark"] .markdown-body table tr:nth-child(2n) {
+	background-color: #182030;
+}
+[data-theme="warm-dark"] .markdown-body pre {
+	background-color: var(--code-bg);
+}
+[data-theme="warm-dark"] .markdown-body code {
+	background-color: var(--code-bg);
+}
+[data-theme="warm-dark"] .hljs {
+	color: #edf1f8;
+}
 
 /* ── Mono ── */
 [data-theme="mono"] .markdown-body {
@@ -1097,16 +1117,26 @@ a:focus {
 	--color-canvas-subtle: #eaeaea;
 	--color-border-default: #c8c8c8;
 	--color-border-muted: #d8d8d8;
-	--color-neutral-muted: rgba(75,75,75,0.15);
+	--color-neutral-muted: rgba(75, 75, 75, 0.15);
 	--color-accent-fg: #4b4b4b;
 	--color-accent-emphasis: #4b4b4b;
 	--color-danger-fg: #4b4b4b;
 }
-[data-theme="mono"] .markdown-body table tr { background-color: var(--table-bg); }
-[data-theme="mono"] .markdown-body table tr:nth-child(2n) { background-color: #efefef; }
-[data-theme="mono"] .markdown-body pre { background-color: var(--code-bg); }
-[data-theme="mono"] .markdown-body code { background-color: var(--code-bg); }
-[data-theme="mono"] .hljs { color: #171717; }
+[data-theme="mono"] .markdown-body table tr {
+	background-color: var(--table-bg);
+}
+[data-theme="mono"] .markdown-body table tr:nth-child(2n) {
+	background-color: #efefef;
+}
+[data-theme="mono"] .markdown-body pre {
+	background-color: var(--code-bg);
+}
+[data-theme="mono"] .markdown-body code {
+	background-color: var(--code-bg);
+}
+[data-theme="mono"] .hljs {
+	color: #171717;
+}
 
 /* ── Mono Dark ── */
 [data-theme="mono-dark"] .markdown-body {
@@ -1124,16 +1154,26 @@ a:focus {
 	--color-canvas-subtle: #171717;
 	--color-border-default: #3c3c3c;
 	--color-border-muted: #2a2a2a;
-	--color-neutral-muted: rgba(161,161,161,0.15);
+	--color-neutral-muted: rgba(161, 161, 161, 0.15);
 	--color-accent-fg: #a1a1a1;
 	--color-accent-emphasis: #a1a1a1;
 	--color-danger-fg: #a1a1a1;
 }
-[data-theme="mono-dark"] .markdown-body table tr { background-color: var(--table-bg); }
-[data-theme="mono-dark"] .markdown-body table tr:nth-child(2n) { background-color: #1a1a1a; }
-[data-theme="mono-dark"] .markdown-body pre { background-color: var(--code-bg); }
-[data-theme="mono-dark"] .markdown-body code { background-color: var(--code-bg); }
-[data-theme="mono-dark"] .hljs { color: #ebebeb; }
+[data-theme="mono-dark"] .markdown-body table tr {
+	background-color: var(--table-bg);
+}
+[data-theme="mono-dark"] .markdown-body table tr:nth-child(2n) {
+	background-color: #1a1a1a;
+}
+[data-theme="mono-dark"] .markdown-body pre {
+	background-color: var(--code-bg);
+}
+[data-theme="mono-dark"] .markdown-body code {
+	background-color: var(--code-bg);
+}
+[data-theme="mono-dark"] .hljs {
+	color: #ebebeb;
+}
 
 /* ── Theme dropdown ── */
 .theme-dropdown {

@@ -69,13 +69,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	// ── Theme system ──
 	const THEMES = [
-		"light", "dark", "solarized-light", "solarized",
-		"github", "dracula", "nord", "catppuccin", "monokai", "rose-pine",
-		"warm", "warm-dark", "mono", "mono-dark",
+		"light",
+		"dark",
+		"solarized-light",
+		"solarized",
+		"github",
+		"dracula",
+		"nord",
+		"catppuccin",
+		"monokai",
+		"rose-pine",
+		"warm",
+		"warm-dark",
+		"mono",
+		"mono-dark",
 	];
 	const DARK_THEMES = new Set([
-		"dark", "solarized", "dracula", "nord", "catppuccin",
-		"monokai", "rose-pine", "warm-dark", "mono-dark",
+		"dark",
+		"solarized",
+		"dracula",
+		"nord",
+		"catppuccin",
+		"monokai",
+		"rose-pine",
+		"warm-dark",
+		"mono-dark",
 	]);
 
 	function applyTheme(theme) {
@@ -181,6 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		const validLanguage = hljs.getLanguage(language) ? language : "plaintext";
 		const highlightedCode = hljs.highlight(code, {
 			language: validLanguage,
+			ignoreIllegals: true,
 		}).value;
 		return `<pre><code class="hljs ${validLanguage}">${highlightedCode}</code></pre>`;
 	};
@@ -191,7 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		highlight: (code, language) => {
 			if (language === "mermaid") return code;
 			const validLanguage = hljs.getLanguage(language) ? language : "plaintext";
-			return hljs.highlight(code, { language: validLanguage }).value;
+			return hljs.highlight(code, { language: validLanguage, ignoreIllegals: true }).value;
 		},
 	});
 
@@ -258,16 +277,6 @@ graph TD
 				ADD_ATTR: ["id", "class", "style"],
 			});
 			markdownPreview.innerHTML = sanitizedHtml;
-
-			markdownPreview.querySelectorAll("pre code").forEach((block) => {
-				try {
-					if (!block.classList.contains("mermaid")) {
-						hljs.highlightElement(block);
-					}
-				} catch (e) {
-					console.warn("Syntax highlighting failed for a code block:", e);
-				}
-			});
 
 			processEmojis(markdownPreview);
 
