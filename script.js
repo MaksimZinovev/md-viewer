@@ -210,7 +210,10 @@ document.addEventListener("DOMContentLoaded", () => {
 		highlight: (code, language) => {
 			if (language === "mermaid") return code;
 			const validLanguage = hljs.getLanguage(language) ? language : "plaintext";
-			return hljs.highlight(code, { language: validLanguage, ignoreIllegals: true }).value;
+			return hljs.highlight(code, {
+				language: validLanguage,
+				ignoreIllegals: true,
+			}).value;
 		},
 	});
 
