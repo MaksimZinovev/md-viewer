@@ -1,24 +1,49 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A premium markdown editor with live preview, diagrams, equations, and reliable exports.">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A premium markdown editor with live preview, diagrams, equations, and reliable exports."
+    />
     <!-- CODE BY AKSHIT SUTHAR -->
     <title>ViewMD</title>
-    <link href="assets/icon.jpg" rel="icon" type="image/jpg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="assets/icon.jpg" rel="icon" type="image/jpg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <!-- Updated libraries to latest versions -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.3.0/github-markdown.min.css">
-    <link rel="stylesheet" id="highlight-theme" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/emoji-toolkit@9.0.1/extras/css/joypixels.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.3.0/github-markdown.min.css"
+    />
+    <link
+      rel="stylesheet"
+      id="highlight-theme"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/emoji-toolkit@9.0.1/extras/css/joypixels.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
     <!-- Added mermaid CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.css"
+    />
 
     <!-- Loading order optimized - ensure libraries are loaded before they're used -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
@@ -31,181 +56,435 @@
     <script src="https://cdn.jsdelivr.net/npm/emoji-toolkit@9.0.1/lib/js/joypixels.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
- <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-</head>
-<body>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+  </head>
+  <body>
     <a class="skip-link" href="#markdown-editor">Skip to editor</a>
     <div class="app-container">
-        <header class="app-header">
-            <div class="container-fluid d-flex justify-content-between align-items-center header-container">
-                <!-- Left section: Logo, GitHub, Stats -->
-                <div class="d-flex align-items-center header-left">
-                    <span aria-hidden="true"><img id="app-logo" src="assets/file.png" alt="App Logo" width="38" height="38" loading="lazy"></span>
-                    <h1 class="h4 mb-0 ms-3">ViewMD</h1>
-                    <a href="https://github.com/akshitsutharr/md-viewer/" class="github-link ms-3" title="View on GitHub" target="_blank" rel="noopener noreferrer">
-                        <i class="bi bi-github"></i>
-                    </a>
-                    <div id="stats-container" class="stats-container d-flex align-items-center d-none d-lg-flex">
-                        <div class="stat-item me-3">
-                            <i class="bi bi-clock me-1"></i> <span id="reading-time">0</span> Min Read
-                        </div>
-                        <div class="stat-item me-3">
-                            <i class="bi bi-text-paragraph me-1"></i> <span id="word-count">0</span> Words
-                        </div>
-                        <div class="stat-item">
-                            <i class="bi bi-fonts me-1"></i> <span id="char-count">0</span> Chars
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Center section: View Mode Buttons -->
-                <div class="view-mode-group d-none d-md-flex" role="group" aria-label="View mode">
-                    <button class="view-mode-btn" data-mode="editor" aria-pressed="false" title="Editor only">
-                        <i class="bi bi-file-text"></i>
-                        <span>Editor</span>
-                    </button>
-                    <button class="view-mode-btn active" data-mode="split" aria-pressed="true" title="Split view">
-                        <i class="bi bi-layout-split"></i>
-                        <span>Split</span>
-                    </button>
-                    <button class="view-mode-btn" data-mode="preview" aria-pressed="false" title="Preview only">
-                        <i class="bi bi-eye"></i>
-                        <span>Preview</span>
-                    </button>
-                </div>
-
-                <!-- Right section: Toolbar -->
-                <div class="toolbar d-none d-md-flex header-right">
-                    <button id="toggle-sync" class="tool-button sync-enabled border-primary" title="Toggle Sync Scrolling">
-                        <i class="bi bi-link"></i> Sync Off
-                    </button>
-                    <button id="import-button" class="tool-button" title="Import Markdown">
-                        <i class="bi bi-upload"></i> Import
-                    </button>
-                    <input type="file" id="file-input" class="file-input" accept=".md,.markdown,text/markdown">
-                    
-                    <div class="dropdown">
-                        <button class="tool-button dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-download"></i> Export
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="exportDropdown">
-                            <li><a class="dropdown-item" href="#" id="export-md">Markdown (.md)</a></li>
-                            <li><a class="dropdown-item" href="#" id="export-html">HTML</a></li>
-                            <li><a class="dropdown-item" href="#" id="export-pdf">PDF</a></li>
-                        </ul>
-                    </div>
-                    
-                    <button id="copy-markdown-button" class="tool-button" title="Copy Markdown">
-                        <i class="bi bi-clipboard"></i> Copy
-                    </button>
-                    
-                    <button id="theme-toggle" class="tool-button" title="Toggle Dark Mode">
-                        <i class="bi bi-moon"></i>
-                    </button>
-                </div>
-                
-                <!-- Hamburger menu for mobile -->
-                <div class="mobile-menu d-md-none">
-                    <button id="mobile-menu-toggle" class="tool-button" title="Menu">
-                        <i class="bi bi-list"></i>
-                    </button>
-                    
-                    <div id="mobile-menu-panel" class="mobile-menu-panel">
-                        <div class="mobile-menu-header">
-                            <h5>Menu</h5>
-                            <button id="close-mobile-menu" class="tool-button">
-                                <i class="bi bi-x-lg"></i>
-                            </button>
-                        </div>
-
-                        <!-- Story 1.4: Mobile View Mode Buttons -->
-                        <div class="mobile-view-mode-group mb-3" role="group" aria-label="View mode">
-                            <button class="mobile-view-mode-btn" data-mode="editor" aria-pressed="false" title="Editor only">
-                                <i class="bi bi-file-text"></i>
-                                <span>Editor</span>
-                            </button>
-                            <button class="mobile-view-mode-btn active" data-mode="split" aria-pressed="true" title="Split view">
-                                <i class="bi bi-layout-split"></i>
-                                <span>Split</span>
-                            </button>
-                            <button class="mobile-view-mode-btn" data-mode="preview" aria-pressed="false" title="Preview only">
-                                <i class="bi bi-eye"></i>
-                                <span>Preview</span>
-                            </button>
-                        </div>
-
-                        <div class="mobile-stats-container mb-3">
-                            <div class="stat-item mb-2">
-                                <i class="bi bi-clock me-1"></i> <span id="mobile-reading-time">0</span> Min Read
-                            </div>
-                            <div class="stat-item mb-2">
-                                <i class="bi bi-text-paragraph me-1"></i> <span id="mobile-word-count">0</span> Words
-                            </div>
-                            <div class="stat-item">
-                                <i class="bi bi-fonts me-1"></i> <span id="mobile-char-count">0</span> Chars
-                            </div>
-                        </div>
-
-                        <div class="mobile-menu-items">
-                            <button id="mobile-toggle-sync" class="mobile-menu-item tool-button sync-enabled border-primary" title="Toggle Sync Scrolling">
-                                <i class="bi bi-link"></i> Sync Off
-                            </button>
-                            
-                            <button id="mobile-import-button" class="mobile-menu-item" title="Import Markdown">
-                                <i class="bi bi-upload me-2"></i> Import Markdown
-                            </button>
-                            
-                            <button id="mobile-export-md" class="mobile-menu-item" title="Export as Markdown">
-                                <i class="bi bi-file-earmark-text me-2"></i> Export as Markdown
-                            </button>
-                            
-                            <button id="mobile-export-html" class="mobile-menu-item" title="Export as HTML">
-                                <i class="bi bi-file-earmark-code me-2"></i> Export as HTML
-                            </button>
-                            
-                            <button id="mobile-export-pdf" class="mobile-menu-item" title="Export as PDF">
-                                <i class="bi bi-file-earmark-pdf me-2"></i> Export as PDF
-                            </button>
-                            
-                            <button id="mobile-copy-markdown" class="mobile-menu-item" title="Copy Markdown">
-                                <i class="bi bi-clipboard me-2"></i> Copy
-                            </button>
-                            
-                            <button id="mobile-theme-toggle" class="mobile-menu-item" title="Toggle Dark Mode">
-                                <i class="bi bi-moon me-2"></i> Dark Mode
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div id="mobile-menu-overlay"></div>
-                </div>
+      <header class="app-header">
+        <div
+          class="container-fluid d-flex justify-content-between align-items-center header-container"
+        >
+          <!-- Left section: Logo, GitHub, Stats -->
+          <div class="d-flex align-items-center header-left">
+            <span aria-hidden="true"
+              ><img
+                id="app-logo"
+                src="assets/file.png"
+                alt="App Logo"
+                width="38"
+                height="38"
+                loading="lazy"
+            /></span>
+            <h1 class="h4 mb-0 ms-3">ViewMD</h1>
+            <a
+              href="https://github.com/akshitsutharr/md-viewer/"
+              class="github-link ms-3"
+              title="View on GitHub"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <i class="bi bi-github"></i>
+            </a>
+            <div
+              id="stats-container"
+              class="stats-container d-flex align-items-center d-none d-lg-flex"
+            >
+              <div class="stat-item me-3">
+                <i class="bi bi-clock me-1"></i>
+                <span id="reading-time">0</span> Min Read
+              </div>
+              <div class="stat-item me-3">
+                <i class="bi bi-text-paragraph me-1"></i>
+                <span id="word-count">0</span> Words
+              </div>
+              <div class="stat-item">
+                <i class="bi bi-fonts me-1"></i>
+                <span id="char-count">0</span> Chars
+              </div>
             </div>
-        </header>
+          </div>
 
-        <div id="dropzone" class="dropzone container-fluid mt-2">
-            <button id="close-dropzone" class="close-btn" title="Close dropzone">
-                <i class="bi bi-x-lg"></i>
+          <!-- Center section: View Mode Buttons -->
+          <div
+            class="view-mode-group d-none d-md-flex"
+            role="group"
+            aria-label="View mode"
+          >
+            <button
+              class="view-mode-btn"
+              data-mode="editor"
+              aria-pressed="false"
+              title="Editor only"
+            >
+              <i class="bi bi-file-text"></i>
+              <span>Editor</span>
             </button>
-            <p class="mb-0"><i class="bi bi-cloud-arrow-up me-2"></i>Drop your Markdown file here or click to browse</p>
-        </div>
+            <button
+              class="view-mode-btn active"
+              data-mode="split"
+              aria-pressed="true"
+              title="Split view"
+            >
+              <i class="bi bi-layout-split"></i>
+              <span>Split</span>
+            </button>
+            <button
+              class="view-mode-btn"
+              data-mode="preview"
+              aria-pressed="false"
+              title="Preview only"
+            >
+              <i class="bi bi-eye"></i>
+              <span>Preview</span>
+            </button>
+          </div>
 
-        <main class="content-container" aria-label="Editor and preview workspace">
-            <div class="editor-pane">
-                <textarea id="markdown-editor" placeholder="Type or paste your Markdown here..."></textarea>
+          <!-- Right section: Toolbar -->
+          <div class="toolbar d-none d-md-flex header-right">
+            <button
+              id="toggle-sync"
+              class="tool-button sync-enabled border-primary"
+              title="Toggle Sync Scrolling"
+            >
+              <i class="bi bi-link"></i> Sync Off
+            </button>
+            <button
+              id="import-button"
+              class="tool-button"
+              title="Import Markdown"
+            >
+              <i class="bi bi-upload"></i> Import
+            </button>
+            <input
+              type="file"
+              id="file-input"
+              class="file-input"
+              accept=".md,.markdown,text/markdown"
+            />
+
+            <div class="dropdown">
+              <button
+                class="tool-button dropdown-toggle"
+                type="button"
+                id="exportDropdown"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="bi bi-download"></i> Export
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                <li>
+                  <a class="dropdown-item" href="#" id="export-md"
+                    >Markdown (.md)</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#" id="export-html">HTML</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#" id="export-pdf">PDF</a>
+                </li>
+              </ul>
             </div>
-            <!-- Resize Divider - Story 1.3 -->
-            <div class="resize-divider" role="separator" aria-orientation="vertical" aria-label="Resize panes" tabindex="0">
-                <div class="resize-divider-handle"></div>
+
+            <button
+              id="copy-markdown-button"
+              class="tool-button"
+              title="Copy Markdown"
+            >
+              <i class="bi bi-clipboard"></i> Copy
+            </button>
+
+            <div class="theme-selector-wrapper" style="position: relative">
+              <button
+                id="theme-toggle"
+                class="tool-button"
+                title="Change Theme"
+              >
+                <i class="bi bi-palette"></i>
+              </button>
+              <div
+                id="theme-dropdown"
+                class="theme-dropdown"
+                style="display: none"
+              >
+                <button class="theme-option" data-theme="light">
+                  <span class="theme-swatch" style="background: #f5f7fb"></span>
+                  Light
+                </button>
+                <button class="theme-option" data-theme="dark">
+                  <span class="theme-swatch" style="background: #0b0f14"></span>
+                  Dark
+                </button>
+                <button class="theme-option" data-theme="solarized-light">
+                  <span class="theme-swatch" style="background: #fdf6e3"></span>
+                  Solarized Light
+                </button>
+                <button class="theme-option" data-theme="solarized">
+                  <span class="theme-swatch" style="background: #002b36"></span>
+                  Solarized Dark
+                </button>
+                <button class="theme-option" data-theme="github">
+                  <span class="theme-swatch" style="background: #ffffff"></span>
+                  GitHub
+                </button>
+                <button class="theme-option" data-theme="dracula">
+                  <span class="theme-swatch" style="background: #282a36"></span>
+                  Dracula
+                </button>
+                <button class="theme-option" data-theme="nord">
+                  <span class="theme-swatch" style="background: #2e3440"></span>
+                  Nord
+                </button>
+                <button class="theme-option" data-theme="catppuccin">
+                  <span class="theme-swatch" style="background: #1e1e2e"></span>
+                  Catppuccin
+                </button>
+                <button class="theme-option" data-theme="monokai">
+                  <span class="theme-swatch" style="background: #272822"></span>
+                  Monokai
+                </button>
+                <button class="theme-option" data-theme="rose-pine">
+                  <span class="theme-swatch" style="background: #191724"></span>
+                  Rosé Pine
+                </button>
+                <button class="theme-option" data-theme="warm">
+                  <span class="theme-swatch" style="background: #f7f1e8"></span>
+                  Warm
+                </button>
+                <button class="theme-option" data-theme="warm-dark">
+                  <span class="theme-swatch" style="background: #13171d"></span>
+                  Warm Dark
+                </button>
+                <button class="theme-option" data-theme="mono">
+                  <span class="theme-swatch" style="background: #efefef"></span>
+                  Mono
+                </button>
+                <button class="theme-option" data-theme="mono-dark">
+                  <span class="theme-swatch" style="background: #101010"></span>
+                  Mono Dark
+                </button>
+              </div>
             </div>
-            <div class="preview-pane">
-                <div id="markdown-preview" class="markdown-body"></div>
+          </div>
+
+          <!-- Hamburger menu for mobile -->
+          <div class="mobile-menu d-md-none">
+            <button id="mobile-menu-toggle" class="tool-button" title="Menu">
+              <i class="bi bi-list"></i>
+            </button>
+
+            <div id="mobile-menu-panel" class="mobile-menu-panel">
+              <div class="mobile-menu-header">
+                <h5>Menu</h5>
+                <button id="close-mobile-menu" class="tool-button">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+
+              <!-- Story 1.4: Mobile View Mode Buttons -->
+              <div
+                class="mobile-view-mode-group mb-3"
+                role="group"
+                aria-label="View mode"
+              >
+                <button
+                  class="mobile-view-mode-btn"
+                  data-mode="editor"
+                  aria-pressed="false"
+                  title="Editor only"
+                >
+                  <i class="bi bi-file-text"></i>
+                  <span>Editor</span>
+                </button>
+                <button
+                  class="mobile-view-mode-btn active"
+                  data-mode="split"
+                  aria-pressed="true"
+                  title="Split view"
+                >
+                  <i class="bi bi-layout-split"></i>
+                  <span>Split</span>
+                </button>
+                <button
+                  class="mobile-view-mode-btn"
+                  data-mode="preview"
+                  aria-pressed="false"
+                  title="Preview only"
+                >
+                  <i class="bi bi-eye"></i>
+                  <span>Preview</span>
+                </button>
+              </div>
+
+              <div class="mobile-stats-container mb-3">
+                <div class="stat-item mb-2">
+                  <i class="bi bi-clock me-1"></i>
+                  <span id="mobile-reading-time">0</span> Min Read
+                </div>
+                <div class="stat-item mb-2">
+                  <i class="bi bi-text-paragraph me-1"></i>
+                  <span id="mobile-word-count">0</span> Words
+                </div>
+                <div class="stat-item">
+                  <i class="bi bi-fonts me-1"></i>
+                  <span id="mobile-char-count">0</span> Chars
+                </div>
+              </div>
+
+              <div class="mobile-menu-items">
+                <button
+                  id="mobile-toggle-sync"
+                  class="mobile-menu-item tool-button sync-enabled border-primary"
+                  title="Toggle Sync Scrolling"
+                >
+                  <i class="bi bi-link"></i> Sync Off
+                </button>
+
+                <button
+                  id="mobile-import-button"
+                  class="mobile-menu-item"
+                  title="Import Markdown"
+                >
+                  <i class="bi bi-upload me-2"></i> Import Markdown
+                </button>
+
+                <button
+                  id="mobile-export-md"
+                  class="mobile-menu-item"
+                  title="Export as Markdown"
+                >
+                  <i class="bi bi-file-earmark-text me-2"></i> Export as
+                  Markdown
+                </button>
+
+                <button
+                  id="mobile-export-html"
+                  class="mobile-menu-item"
+                  title="Export as HTML"
+                >
+                  <i class="bi bi-file-earmark-code me-2"></i> Export as HTML
+                </button>
+
+                <button
+                  id="mobile-export-pdf"
+                  class="mobile-menu-item"
+                  title="Export as PDF"
+                >
+                  <i class="bi bi-file-earmark-pdf me-2"></i> Export as PDF
+                </button>
+
+                <button
+                  id="mobile-copy-markdown"
+                  class="mobile-menu-item"
+                  title="Copy Markdown"
+                >
+                  <i class="bi bi-clipboard me-2"></i> Copy
+                </button>
+
+                <button
+                  id="mobile-theme-toggle"
+                  class="mobile-menu-item"
+                  title="Change Theme"
+                >
+                  <i class="bi bi-palette me-2"></i> Theme
+                </button>
+                <div
+                  id="mobile-theme-list"
+                  class="mobile-theme-list"
+                  style="display: none"
+                >
+                  <button class="mobile-theme-option" data-theme="light">
+                    ☀️ Light
+                  </button>
+                  <button class="mobile-theme-option" data-theme="dark">
+                    🌙 Dark
+                  </button>
+                  <button
+                    class="mobile-theme-option"
+                    data-theme="solarized-light"
+                  >
+                    🌅 Solarized Light
+                  </button>
+                  <button class="mobile-theme-option" data-theme="solarized">
+                    🔭 Solarized Dark
+                  </button>
+                  <button class="mobile-theme-option" data-theme="github">
+                    🐙 GitHub
+                  </button>
+                  <button class="mobile-theme-option" data-theme="dracula">
+                    🧛 Dracula
+                  </button>
+                  <button class="mobile-theme-option" data-theme="nord">
+                    ❄️ Nord
+                  </button>
+                  <button class="mobile-theme-option" data-theme="catppuccin">
+                    🐱 Catppuccin
+                  </button>
+                  <button class="mobile-theme-option" data-theme="monokai">
+                    🎨 Monokai
+                  </button>
+                  <button class="mobile-theme-option" data-theme="rose-pine">
+                    🌹 Rosé Pine
+                  </button>
+                  <button class="mobile-theme-option" data-theme="warm">
+                    🌊 Warm
+                  </button>
+                  <button class="mobile-theme-option" data-theme="warm-dark">
+                    🌙 Warm Dark
+                  </button>
+                  <button class="mobile-theme-option" data-theme="mono">
+                    📰 Mono
+                  </button>
+                  <button class="mobile-theme-option" data-theme="mono-dark">
+                    🖤 Mono Dark
+                  </button>
+                </div>
+              </div>
             </div>
-        </main>
+
+            <div id="mobile-menu-overlay"></div>
+          </div>
+        </div>
+      </header>
+
+      <div id="dropzone" class="dropzone container-fluid mt-2">
+        <button id="close-dropzone" class="close-btn" title="Close dropzone">
+          <i class="bi bi-x-lg"></i>
+        </button>
+        <p class="mb-0">
+          <i class="bi bi-cloud-arrow-up me-2"></i>Drop your Markdown file here
+          or click to browse
+        </p>
+      </div>
+
+      <main class="content-container" aria-label="Editor and preview workspace">
+        <div class="editor-pane">
+          <textarea
+            id="markdown-editor"
+            placeholder="Type or paste your Markdown here..."
+          ></textarea>
+        </div>
+        <!-- Resize Divider - Story 1.3 -->
+        <div
+          class="resize-divider"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize panes"
+          tabindex="0"
+        >
+          <div class="resize-divider-handle"></div>
+        </div>
+        <div class="preview-pane">
+          <div id="markdown-preview" class="markdown-body"></div>
+        </div>
+      </main>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
