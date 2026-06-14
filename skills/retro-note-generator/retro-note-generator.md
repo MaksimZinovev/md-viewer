@@ -1,8 +1,17 @@
+---
+name: retro-note-generator
+description: 
+---
+<!-- 
+version: 5
+last change: removed init styling block, added actions and ideas sections
+ -->
+ 
 # Agile Retrospective Note Generator
 
 ## Task
 
-Transcribe the provided audio, then produce a structured retrospective note in the style of an Agile team retrospective.
+Use available content to produce a structured retrospective note in the style of an Agile team retrospective. The input can be in form of audio or text file(s). Immidiatelly stop and inform user if you are not able to access files, process them or ther eare major issues that may result in degraded quality of output.
 
 ---
 
@@ -135,7 +144,7 @@ Repeat the correct pattern for every semantic chunk. The reader sees only TL;DR 
 - **Mermaid identifiers:** All node IDs, axis IDs, and curve IDs MUST be ASCII (`[a-zA-Z_][a-zA-Z0-9_]*`). Use quoted labels for display text in any script: `A["Кириллица"]` not `Кириллица`. This is a Mermaid parser constraint, not a style preference.
 - **Heading hierarchy:** Exactly one `#` (title), then `##` for sections. No `###` or deeper — keeps structure flat and scannable.
 - **Alt text:** Every diagram gets a `<!-- alt: ... -->` comment directly above it describing what it conveys for screen-reader users.
-- **Language:** Mirror the tone and vocabulary of the source audio. Casual, direct, no corporate-speak unless the speakers use it.
+- **Language:** Mirror the tone and vocabulary of the source audio to ensure the note feels authentic to the source material (include citations where needed). Casual, direct, no corporate-speak unless the speakers use it.
 
 ---
 
@@ -173,21 +182,3 @@ Every committed action item — who will do what and by when.
 - If no actions were agreed, write: *"No actions committed this retro."*
 
 ---
-
-## 9. Appendix: Options Considered (mandatory, always last)
-
-After the final `<details>` block, append:
-
-```markdown
----
-
-## 🧭 Options Considered
-
-| # | Option | Decision | Why |
-|---|--------|----------|-----|
-| 1 | ...    | ✅ / ❌   | ... |
-| 2 | ...    | ✅ / ❌   | ... |
-| 3 | ...    | ✅ / ❌   | ... |
-```
-
-3–5 rows. Capture genuine design choices made while producing this specific retro — not boilerplate.
