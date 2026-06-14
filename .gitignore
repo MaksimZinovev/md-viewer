@@ -30,7 +30,7 @@ dist-ssr/
 *.sw?
 .ck
 .pi
-.pi-lens
+.pi-lens/
 .specstory
 
 # History/backup folders (optional, если используете плагины истории)
