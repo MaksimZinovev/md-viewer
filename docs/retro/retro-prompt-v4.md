@@ -17,9 +17,9 @@ A single standalone **Markdown** file, ≤100 lines. The rendering target suppor
 Every retro note opens with this block — same fields, same order, every time:
 
 ```
-| 📅 Date | 👥 Participants | 🏷️ Sprint/Phase | 😀 Mood |
-|---------|-----------------|------------------|---------|
-| ...     | ...             | ...              | ...     |
+| 📅 Date |  🏷️ Sprint/Phase  | 😀 Mood |
+|---------|------------------|---------|
+| ...     |  ...             | ...     |
 ```
 
 If the audio doesn't supply a field, mark it `—` rather than omitting it.
