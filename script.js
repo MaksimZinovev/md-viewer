@@ -158,42 +158,13 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 	});
 
-	function contrastColor(hex) {
-		// WCAG relative luminance → pick dark or light text
-		const r = parseInt(hex.slice(1, 3), 16) / 255;
-		const g = parseInt(hex.slice(3, 5), 16) / 255;
-		const b = parseInt(hex.slice(5, 7), 16) / 255;
-		const toLinear = (c) =>
-			c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-		const luminance =
-			0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
-		return luminance > 0.179 ? "#1a1a1a" : "#ffffff";
-	}
-
 	function initMermaid() {
-		const cs = getComputedStyle(document.documentElement);
-
-		const accentColor = cs.getPropertyValue("--accent-color").trim();
-		const accent2 = cs.getPropertyValue("--accent-2").trim();
-		const textColor = cs.getPropertyValue("--text-color").trim();
-		const borderColor = cs.getPropertyValue("--border-color").trim();
-		const codeBg = cs.getPropertyValue("--code-bg").trim();
+		const currentTheme = document.documentElement.getAttribute("data-theme");
+		const mermaidTheme = DARK_THEMES.has(currentTheme) ? "dark" : "default";
 
 		mermaid.initialize({
 			startOnLoad: false,
-			theme: "base",
-			themeVariables: {
-				primaryColor: accentColor,
-				primaryTextColor: contrastColor(accentColor),
-				primaryBorderColor: borderColor,
-				secondaryColor: accent2,
-				secondaryTextColor: contrastColor(accent2),
-				tertiaryColor: codeBg,
-				tertiaryTextColor: contrastColor(codeBg),
-				lineColor: borderColor,
-				textColor: textColor,
-				fontSize: "14px",
-			},
+			theme: mermaidTheme,
 			securityLevel: "loose",
 			flowchart: { useMaxWidth: true, htmlLabels: true },
 			fontSize: 16,
@@ -220,11 +191,9 @@ document.addEventListener("DOMContentLoaded", () => {
 	const renderer = new marked.Renderer();
 	renderer.code = (code, language) => {
 		if (language === "mermaid") {
-			// Strip %%{init:...}%% so global theme (set in initMermaid) takes over
-			const strippedCode = code.replace(/%%\{init:.*?\}%%\n?/g, "");
 			const uniqueId =
 				"mermaid-diagram-" + Math.random().toString(36).substr(2, 9);
-			return `<div class="mermaid-container"><div class="mermaid" id="${uniqueId}">${strippedCode}</div></div>`;
+			return `<div class="mermaid-container"><div class="mermaid" id="${uniqueId}">${code}</div></div>`;
 		}
 
 		const validLanguage = hljs.getLanguage(language) ? language : "plaintext";
