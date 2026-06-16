@@ -36,3 +36,133 @@ dist-ssr/
 # History/backup folders (optional, если используете плагины истории)
 .history/
 .github/copilot-instructions.md
+
+# Dependencies
+node_modules
+.pnpm-store
+
+# Environment
+.env
+.env.*
+!.env.example
+!apps/forge/.env.smoke.example
+.venv
+**/.venv
+.zip
+.ck
+
+# Build
+dist
+build
+*.tsbuildinfo
+
+# Coverage
+coverage
+.nyc_output
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Auth
+.auth
+apps/forge/.auth
+.testops-cli.json
+
+# Test artifacts
+apps/forge/test-results
+apps/desktop/test-results
+apps/desktop/playwright-report
+apps/desktop/release
+apps/forge/allure-results
+apps/forge/allure-report
+artifacts/
+
+# Claude
+.claude
+CLAUDE.md
+
+# Specstory
+.specstory
+
+# Pi
+.pi/
+.pi-lens/
+.obsidian
+
+# Large binaries & images
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.svg
+*.ico
+*.bmp
+*.tiff
+*.pdf
+*.zip
+*.tar
+*.gz
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Local
+.local
+memory/
+scripts/
+.githooks/
+slop-scan.config.json
+nul
+.testops-cli.json
+.pi/
+.pi-lens/
+.obsidian
+.ck
+.local
+__pycache__/
+*.pyc
+**/.DS_Store
+package.local.json
+apps/forge/package.local.json
+
+
+# Assets
+!packages/assets/
+!packages/assets/*.png
+!packages/assets/*.svg
+!packages/assets/*.ico
+
+# Exclude fro ignore custom locations 
+.playwright/
+.playwright-cli/
+
+# Agent browser data
+Default/
+review.md
+.agent-browser/
+
+
