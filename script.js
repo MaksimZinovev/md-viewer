@@ -386,20 +386,17 @@ graph TD
 		markdownRenderTimeout = setTimeout(renderMarkdown, RENDER_DELAY);
 	}
 
-	function calculateMetrics(text) {
-		const charCount = text.length;
-		const wordCount = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
-		const readingTimeMinutes = Math.ceil(wordCount / 200);
-		return { charCount, wordCount, readingTimeMinutes };
-	}
-
-	function refreshDocumentMetrics() {
+	function updateDocumentStats() {
 		const text = markdownEditor.value;
-		const metrics = calculateMetrics(text);
 
-		charCountElement.textContent = metrics.charCount.toLocaleString();
-		wordCountElement.textContent = metrics.wordCount.toLocaleString();
-		readingTimeElement.textContent = metrics.readingTimeMinutes;
+		const charCount = text.length;
+		charCountElement.textContent = charCount.toLocaleString();
+
+		const wordCount = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+		wordCountElement.textContent = wordCount.toLocaleString();
+
+		const readingTimeMinutes = Math.ceil(wordCount / 200);
+		readingTimeElement.textContent = readingTimeMinutes;
 	}
 
 	function syncEditorToPreview() {
