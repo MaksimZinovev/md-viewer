@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Semantic Diff — script.js refactor</title>
+  <style>
+    :root {
+      --bg: #f7f7f9;
+      --panel: #ffffff;
+      --text: #1a1a1e;
+      --muted: #6b6b76;
+      --border: #d5d5dd;
+      --shadow: rgba(0, 0, 0, 0.08);
+      --node-file-bg: #eef0f4;
+      --node-file-stroke: #c4c8d0;
+      --node-added: #22c55e;
+      --node-added-bg: #dcfce7;
+      --node-added-stroke: #16a34a;
+      --node-modified: #f59e0b;
+      --node-modified-bg: #fef3c7;
+      --node-modified-stroke: #d97706;
+      --node-deleted: #ef4444;
+      --node-deleted-bg: #fee2e2;
+      --node-deleted-stroke: #dc2626;
+      --node-none-bg: #f3f4f6;
+      --node-none-stroke: #9ca3af;
+      --edge: #a1a1aa;
+      --edge-highlight: #4f46e5;
+      --dim: 0.28;
+    }
+    html.dark {
+      --bg: #0e0e11;
+      --panel: #18181b;
+      --text: #f0f0f5;
+      --muted: #9ca3af;
+      --border: #2e2e38;
+      --shadow: rgba(0, 0, 0, 0.35);
+      --node-file-bg: #3f3f46;
+      --node-file-stroke: #71717a;
+      --node-added: #4ade80;
+      --node-added-bg: #14532d;
+      --node-added-stroke: #22c55e;
+      --node-modified: #fbbf24;
+      --node-modified-bg: #713f12;
+      --node-modified-stroke: #f59e0b;
+      --node-deleted: #f87171;
+      --node-deleted-bg: #7f1d1d;
+      --node-deleted-stroke: #ef4444;
+      --node-none-bg: #27272a;
+      --node-none-stroke: #52525b;
+      --edge: #52525b;
+      --edge-highlight: #818cf8;
+      --dim: 0.22;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+    #theme-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 100;
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.5rem 0.9rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      box-shadow: 0 2px 12px var(--shadow);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    #theme-toggle:hover { transform: translateY(-1px); box-shadow: 0 4px 18px var(--shadow); }
+    #stage {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    svg { width: 100%; height: 100%; cursor: grab; }
+    svg:active { cursor: grabbing; }
+    .node-group { cursor: pointer; transition: opacity 0.25s ease; }
+    .node-rect {
+      rx: 10;
+      ry: 10;
+      stroke-width: 2;
+      transition: stroke 0.2s ease, filter 0.2s ease, transform 0.2s ease;
+    }
+    .node-group:hover .node-rect { filter: brightness(1.06); }
+    .node-group:hover .node-label { fill: var(--text); }
+    .node-label {
+      font-size: 13px;
+      font-weight: 600;
+      fill: var(--text);
+      pointer-events: none;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      transition: fill 0.2s ease;
+    }
+    .node-sublabel {
+      font-size: 10px;
+      fill: var(--muted);
+      pointer-events: none;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+    .badge {
+      font-size: 9px;
+      font-weight: 700;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      pointer-events: none;
+      fill: #ffffff;
+    }
+    .edge {
+      fill: none;
+      stroke: var(--edge);
+      stroke-width: 1.5;
+      transition: stroke 0.25s ease, stroke-width 0.25s ease, opacity 0.25s ease;
+      marker-end: url(#arrow);
+    }
+    .edge.highlight {
+      stroke: var(--edge-highlight);
+      stroke-width: 2.5;
+      marker-end: url(#arrow-highlight);
+    }
+    .edge.dim { opacity: var(--dim); }
+    .node-group.dim { opacity: var(--dim); }
+    .node-group.highlight .node-rect {
+      stroke: var(--edge-highlight);
+      stroke-width: 3;
+      filter: drop-shadow(0 0 8px rgba(79, 70, 229, 0.35));
+    }
+    #legend {
+      position: fixed;
+      bottom: 1rem;
+      left: 1rem;
+      z-index: 100;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
+      box-shadow: 0 2px 14px var(--shadow);
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      font-size: 0.8rem;
+    }
+    #legend .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    #legend .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      border: 1px solid var(--border);
+    }
+    #info {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      z-index: 100;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
+      box-shadow: 0 2px 14px var(--shadow);
+      max-width: 280px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    #info strong { color: var(--text); }
+  </style>
+  <script>
+    (function () {
+      const stored = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (stored === 'dark' || (!stored && prefersDark)) document.documentElement.classList.add('dark');
+    })();
+  </script>
+</head>
+<body>
+  <button id="theme-toggle" aria-label="Toggle dark mode">🌙 Dark</button>
+
+  <div id="stage">
+    <svg id="diagram" viewBox="0 0 960 540" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--edge)" />
+        </marker>
+        <marker id="arrow-highlight" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--edge-highlight)" />
+        </marker>
+      </defs>
+      <g id="edges"></g>
+      <g id="nodes"></g>
+    </svg>
+  </div>
+
+  <div id="legend">
+    <span class="chip"><span class="swatch" style="background: var(--node-added-bg); border-color: var(--node-added-stroke);"></span> Added</span>
+    <span class="chip"><span class="swatch" style="background: var(--node-modified-bg); border-color: var(--node-modified-stroke);"></span> Modified</span>
+    <span class="chip"><span class="swatch" style="background: var(--node-deleted-bg); border-color: var(--node-deleted-stroke);"></span> Deleted</span>
+    <span class="chip"><span class="swatch" style="background: var(--node-none-bg); border-color: var(--node-none-stroke);"></span> Unchanged</span>
+  </div>
+
+  <div id="info">
+    <strong>script.js refactor</strong><br>
+    Click a node to highlight its dependents. Built from <code>sem diff</code> + <code>sem graph</code>.
+  </div>
+
+  <script>
+    const data = {"nodes":[{"id":"file://script.js","label":"script.js","type":"file","change":"none"},{"id":"script.js::function::updateDocumentStats","label":"updateDocumentStats","type":"function","change":"deleted","filePath":"script.js"},{"id":"script.js::function::calculateMetrics","label":"calculateMetrics","type":"function","change":"added","filePath":"script.js"},{"id":"script.js::function::refreshDocumentMetrics","label":"refreshDocumentMetrics","type":"function","change":"added","filePath":"script.js"}],"edges":[{"from":"file://script.js","to":"script.js::function::updateDocumentStats","type":"contains"},{"from":"file://script.js","to":"script.js::function::calculateMetrics","type":"contains"},{"from":"file://script.js","to":"script.js::function::refreshDocumentMetrics","type":"contains"},{"from":"script.js::function::refreshDocumentMetrics","to":"script.js::function::calculateMetrics","type":"calls"}]};
+
+    const colorMap = {
+      added: { fill: 'var(--node-added-bg)', stroke: 'var(--node-added-stroke)', badge: 'ADD' },
+      modified: { fill: 'var(--node-modified-bg)', stroke: 'var(--node-modified-stroke)', badge: 'MOD' },
+      deleted: { fill: 'var(--node-deleted-bg)', stroke: 'var(--node-deleted-stroke)', badge: 'DEL' },
+      none: { fill: 'var(--node-none-bg)', stroke: 'var(--node-none-stroke)', badge: '' }
+    };
+
+    const nodeHeight = 48;
+    const nodeWidths = { file: 180, function: 170 };
+    const fileY = 80;
+    const funcY = 280;
+    const spacing = 240;
+    const centerX = 960 / 2;
+
+    function layout(nodes) {
+      const file = nodes.find(n => n.type === 'file');
+      const funcs = nodes.filter(n => n.type === 'function');
+      const positions = {};
+      if (file) positions[file.id] = { x: centerX - nodeWidths.file / 2, y: fileY };
+
+      // Order: deleted old function on the left, then the two new functions
+      const order = [
+        'script.js::function::updateDocumentStats',
+        'script.js::function::refreshDocumentMetrics',
+        'script.js::function::calculateMetrics'
+      ];
+      const ordered = order.map(id => funcs.find(n => n.id === id)).filter(Boolean);
+      const totalWidth = (ordered.length - 1) * spacing;
+      let startX = centerX - totalWidth / 2 - nodeWidths.function / 2;
+      ordered.forEach((n, i) => {
+        positions[n.id] = { x: startX + i * spacing, y: funcY };
+      });
+      return positions;
+    }
+
+    function buildGraph() {
+      const edgeGroup = document.getElementById('edges');
+      const nodeGroup = document.getElementById('nodes');
+      const positions = layout(data.nodes);
+
+      // Draw edges
+      data.edges.forEach((edge, i) => {
+        const from = positions[edge.from];
+        const to = positions[edge.to];
+        if (!from || !to) return;
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const d = edge.type === 'contains'
+          ? `M ${from.x + nodeWidths.file / 2} ${from.y + nodeHeight} L ${to.x + nodeWidths.function / 2} ${to.y}`
+          : routeCall(from, to);
+        path.setAttribute('d', d);
+        path.setAttribute('class', 'edge');
+        path.setAttribute('data-from', edge.from);
+        path.setAttribute('data-to', edge.to);
+        path.setAttribute('id', `edge-${i}`);
+        edgeGroup.appendChild(path);
+      });
+
+      // Draw nodes
+      data.nodes.forEach(node => {
+        const pos = positions[node.id];
+        const w = node.type === 'file' ? nodeWidths.file : nodeWidths.function;
+        const colors = colorMap[node.change] || colorMap.none;
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', 'node-group');
+        g.setAttribute('data-id', node.id);
+        g.setAttribute('transform', `translate(${pos.x}, ${pos.y})`);
+
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('width', w);
+        rect.setAttribute('height', nodeHeight);
+        rect.setAttribute('class', 'node-rect');
+        rect.setAttribute('fill', colors.fill);
+        rect.setAttribute('stroke', colors.stroke);
+        g.appendChild(rect);
+
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', w / 2);
+        label.setAttribute('y', node.change === 'none' ? nodeHeight / 2 + 1 : nodeHeight / 2 - 5);
+        label.setAttribute('class', 'node-label');
+        label.textContent = node.label;
+        g.appendChild(label);
+
+        if (node.change !== 'none') {
+          const sub = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          sub.setAttribute('x', w / 2);
+          sub.setAttribute('y', nodeHeight / 2 + 13);
+          sub.setAttribute('class', 'node-sublabel');
+          sub.textContent = node.change.charAt(0).toUpperCase() + node.change.slice(1);
+          g.appendChild(sub);
+        }
+
+        if (node.type === 'file') {
+          const fileLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          fileLabel.setAttribute('x', w / 2);
+          fileLabel.setAttribute('y', -12);
+          fileLabel.setAttribute('class', 'node-sublabel');
+          fileLabel.textContent = 'changed file';
+          g.appendChild(fileLabel);
+        }
+
+        g.addEventListener('click', (e) => {
+          e.stopPropagation();
+          highlight(node.id);
+        });
+        nodeGroup.appendChild(g);
+      });
+    }
+
+    function routeCall(from, to) {
+      const fw = nodeWidths.function;
+      const fh = nodeHeight;
+      const sx = from.x + fw / 2;
+      const sy = from.y + fh;
+      const tx = to.x + fw / 2;
+      const ty = to.y;
+      const midY = sy + (ty - sy) / 2 + 20;
+      return `M ${sx} ${sy} C ${sx} ${midY}, ${tx} ${midY}, ${tx} ${ty}`;
+    }
+
+    function getReachable(startId) {
+      const adj = {};
+      data.edges.forEach(e => {
+        if (!adj[e.from]) adj[e.from] = [];
+        adj[e.from].push(e.to);
+      });
+      const seen = new Set([startId]);
+      const stack = [startId];
+      while (stack.length) {
+        const cur = stack.pop();
+        (adj[cur] || []).forEach(nxt => {
+          if (!seen.has(nxt)) {
+            seen.add(nxt);
+            stack.push(nxt);
+          }
+        });
+      }
+      return seen;
+    }
+
+    function highlight(nodeId) {
+      const reachable = getReachable(nodeId);
+      document.querySelectorAll('.node-group').forEach(g => {
+        const id = g.getAttribute('data-id');
+        g.classList.toggle('dim', !reachable.has(id));
+        g.classList.toggle('highlight', id === nodeId);
+      });
+      document.querySelectorAll('.edge').forEach(e => {
+        const from = e.getAttribute('data-from');
+        const to = e.getAttribute('data-to');
+        const active = reachable.has(from) && reachable.has(to) && from === nodeId || reachable.has(from) && from === nodeId || isOnPath(from, to, nodeId);
+        e.classList.toggle('highlight', active);
+        e.classList.toggle('dim', !active);
+      });
+    }
+
+    function isOnPath(from, to, startId) {
+      const reachable = getReachable(startId);
+      return reachable.has(from) && reachable.has(to);
+    }
+
+    function clearHighlight() {
+      document.querySelectorAll('.node-group, .edge').forEach(el => {
+        el.classList.remove('dim', 'highlight');
+      });
+    }
+
+    document.getElementById('stage').addEventListener('click', clearHighlight);
+
+    // Theme toggle
+    const toggle = document.getElementById('theme-toggle');
+    function updateToggle() {
+      const dark = document.documentElement.classList.contains('dark');
+      toggle.textContent = dark ? '☀️ Light' : '🌙 Dark';
+      localStorage.setItem('theme', dark ? 'dark' : 'light');
+    }
+    toggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      updateToggle();
+    });
+    updateToggle();
+
+    buildGraph();
+  </script>
+</body>
+</html>

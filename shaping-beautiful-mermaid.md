@@ -64,19 +64,45 @@ Leave current ` ```mermaid ` blocks rendered by Mermaid.js. Add a new fenced lan
 
 Drop Mermaid.js. Load `beautiful-mermaid` via an ESM CDN (`esm.sh`, `esm.run`, or jsDelivr ESM) using `<script type="module">` or an import map. No local build step; GitHub Pages serves the same HTML/JS files.
 
+### F: textusm only
+
+`textusm` is an Elm/JavaScript library that turns indented text into diagrams such as User Story Maps, Mind Maps, Gantt charts, ER diagrams, and Business Model Canvases. It is **not a Mermaid renderer**: you write diagrams in its own indentation-based syntax, not in ` ```mermaid ` blocks.
+
+| Aspect | Finding |
+|--------|---------|
+| Theming | Configurable per diagram via constructor options |
+| Output | SVG only; no ASCII/Unicode text rendering |
+| Mermaid compatibility | None — existing ` ```mermaid ` blocks would not render |
+| GitHub Pages fit | Can be loaded via CDN, so static hosting works |
+| Achieves the same goal? | **No.** It cannot take standard Mermaid syntax and produce themed SVG + ASCII. |
+| Easier than Shape E? | **No, unless you rewrite every diagram in `textusm` syntax and drop ASCII output.** That is more work and loses compatibility with existing documents. |
+
+### G: mermaid.mq as a preprocessor
+
+`harehare/mermaid.mq` is a Mermaid parser implemented as an `mq` module. It reads standard Mermaid text and produces a structured AST, plus a stringify function to turn the AST back into Mermaid text.
+
+| Aspect | Finding |
+|--------|---------|
+| Theming | None built-in — theming would have to be invented in the custom renderer |
+| Output | Parse data + text; no SVG or ASCII renderer included |
+| Mermaid compatibility | Parses standard syntax, but only exposes the parsed structure |
+| GitHub Pages fit | Could be loaded as a module, but you still need a renderer |
+| Achieves the same goal? | **No by itself.** It only solves the parsing half of the problem. |
+| Easier than Shape E? | **No.** Using `mermaid.mq` means building your own SVG renderer, ASCII renderer, theming, and error handling from scratch. That is strictly harder than using `beautiful-mermaid`. |
+
 ---
 
 ## Fit Check
 
-| Req | Requirement | Status | CURRENT | A | B | C | D | E |
-|-----|-------------|--------|:-------:|:-:|:-:|:-:|:-:|
-| R0 | Themed diagrams matching app theme | Must-have | ❌ | ✅ | ✅ | ❌ | ✅ | ✅ |
-| R1 | Dual SVG + ASCII output | Must-have | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| R2 | GitHub Pages static deployment | Must-have | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | ✅ |
-| R3 | Existing Mermaid docs render correctly | Must-have | ✅ | ❌ | ✅ | ✅ | ✅ | ❌ |
-| R4 | Preserve plain HTML/JS workflow | Leaning yes | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | ✅ |
-| R5 | Future extensibility for more diagram types | Nice-to-have | ✅ | ❌ | ⚠️ | ✅ | ⚠️ | ❌ |
-| R6 | Foundation for animated/interactive diagrams | Nice-to-have | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| Req | Requirement | Status | CURRENT | A | B | C | D | E | F | G |
+|-----|-------------|--------|:-------:|:-:|:-:|:-:|:-:|:-:|:-:|
+| R0 | Themed diagrams matching app theme | Must-have | ❌ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ❌ |
+| R1 | Dual SVG + ASCII output | Must-have | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
+| R2 | GitHub Pages static deployment | Must-have | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | ✅ | ⚠️ | ✅ |
+| R3 | Existing Mermaid docs render correctly | Must-have | ✅ | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ |
+| R4 | Preserve plain HTML/JS workflow | Leaning yes | ✅ | ⚠️ | ⚠️ | ❌ | ⚠️ | ✅ | ⚠️ | ✅ |
+| R5 | Future extensibility for more diagram types | Nice-to-have | ✅ | ❌ | ⚠️ | ✅ | ⚠️ | ❌ | ❌ | ⚠️ |
+| R6 | Foundation for animated/interactive diagrams | Nice-to-have | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ |
 
 **Notes:**
 - CURRENT fails R0/R1: built-in Mermaid themes are limited and there is no ASCII path.
@@ -85,6 +111,7 @@ Drop Mermaid.js. Load `beautiful-mermaid` via an ESM CDN (`esm.sh`, `esm.run`, o
 - C fails R2/R4 because it requires a backend.
 - **E is the recommended approach**: it is build-free (R4 ✅), GitHub Pages friendly (R2 ✅), and gives themed SVG + ASCII (R0/R1 ✅). The only loss is broad diagram-type support (R3/R5 ❌), which the user has accepted for now.
 - R6 remains ⚠️ for all shapes because advanced animation is a future consideration, not a current requirement.
+- **Feedback response — `textusm` and `mermaid.mq`:** Neither tool achieves the same goal as `beautiful-mermaid` for this project. `textusm` uses a different input language (no Mermaid compatibility, no ASCII output) and would require rewriting existing diagrams. `mermaid.mq` only parses Mermaid into an AST; you would still have to build SVG/ASCII rendering and theming from scratch. Both are therefore **not easier or better fits** than Shape E.
 
 ---
 
@@ -116,14 +143,14 @@ Because we are dropping the fallback for now, the chosen shape accepts the curre
 
 ### CDN fallback
 
-`beautiful-mermaid` can be loaded as a browser bundle (`beautiful-mermaid.browser.global.js`) from unpkg/jsdelivr in addition to the ESM path. We can use that as a fallback if the primary ESM CDN fails:
+The primary load path is an ESM CDN such as `esm.sh` or `esm.run` using an import map. A secondary fallback is desirable so diagrams still render if the primary CDN is unreachable.
 
 - **Primary:** ESM CDN (`esm.sh` / `esm.run`) for clean import-map integration.
-- **Fallback:** Browser global bundle from unpkg or jsdelivr, loaded via a traditional `<script>` tag. It exposes `window.beautifulMermaid`, which can be mapped to the same import name in the module code.
+- **Fallback (to verify):** A second ESM CDN URL for the same pinned version, or a self-hosted copy. When the specific `beautiful-mermaid.browser.global.js` path was probed on unpkg and jsDelivr for the pinned version, both returned 404. So a browser-global bundle fallback is not confirmed yet and must be re-checked before implementation.
 
-However, the fallback bundle only provides the older API (`renderMermaid`, `renderMermaidAscii`, `THEMES`, `DEFAULTS`) and may not expose newer names like `renderMermaidSVG`. The README/early releases show `renderMermaid`, while later docs use `renderMermaidSVG`. The exact API available on the browser global depends on which version is served by the CDN. If we keep the primary and fallback aligned at the same version, we can choose whichever API that version exposes.
+If a working browser-global bundle is found, it exposes `window.beautifulMermaid` with the older API (`renderMermaid`, `renderMermaidAscii`, `THEMES`, `DEFAULTS`), which may differ from newer ESM names like `renderMermaidSVG`. Keeping both sources on the same pinned version lets us align the API we actually call.
 
-A simple fallback loader pattern:
+A simple loader pattern once the fallback URL is confirmed:
 
 ```html
 <script type="importmap">
@@ -133,6 +160,7 @@ A simple fallback loader pattern:
   }
 }
 </script>
+<!-- Verify this URL exists for the chosen version -->
 <script src="https://unpkg.com/beautiful-mermaid@1.1.3/dist/beautiful-mermaid.browser.global.js"></script>
 ```
 
@@ -142,7 +170,7 @@ Then in the module code:
 import { renderMermaidSVG, renderMermaidASCII, THEMES } from "beautiful-mermaid";
 ```
 
-If `esm.sh` fails to load, the browser global from unpkg/jsdelivr can be mapped manually before the import is used:
+If the primary ESM CDN fails but the global bundle loaded, the global can be mapped manually:
 
 ```javascript
 if (typeof window.beautifulMermaid !== "undefined") {
@@ -151,14 +179,10 @@ if (typeof window.beautifulMermaid !== "undefined") {
 }
 ```
 
-In practice, a robust fallback requires either:
-- keeping both sources at the same pinned version and using only the API that the browser global exposes, or
-- bundling the library locally and serving it from the repo (which removes the CDN dependency entirely but requires a small build step).
-
-For now, the simplest reliable approach is:
-- Pin a specific version (`@1.1.3`) in both the ESM import map and the global script fallback.
-- Test that the chosen API works with that exact version.
-- Accept that if both CDNs are unavailable, diagrams will not render (a rare scenario for a personal project).
+For now, the practical options are:
+- Use a second ESM CDN URL as the fallback (simplest, still build-free).
+- Download the library file into the repo and serve it locally (removes the CDN dependency entirely; adds one static asset to maintain).
+- Accept that if all CDN paths are unavailable, diagrams will not render (rare scenario for a personal project).
 
 This keeps the workflow build-free while reducing the single-CDN risk.
 
@@ -189,7 +213,9 @@ For richer animation in the future — playback-style sequence reveals, step-by-
 
 3. **Animation scope** — The user wants all three levels eventually: smooth theme/color transitions, hover/interactive tooltips, and playback-style step-by-step animations. `beautiful-mermaid` supports the first two via CSS variables / `interactive: true` for XY charts; playback-style animations would require future custom work or upstream extension.
 
-4. **CDN fallback** — Pin a specific `beautiful-mermaid` version in both the ESM import map and a global bundle fallback from unpkg/jsdelivr. This keeps the workflow build-free while reducing the risk of a single CDN failure. If both CDNs are down, diagrams will not render, which is acceptable for a personal project.
+4. **CDN fallback** — Pin a specific `beautiful-mermaid` version in the ESM import map (e.g. `esm.sh`) and prepare a fallback path to another ESM CDN or a self-hosted copy. The exact `beautiful-mermaid.browser.global.js` bundle path returned 404 on both unpkg and jsDelivr when probed for the pinned version, so the fallback URL must be verified before implementation. If all CDN paths are unavailable, diagrams will not render, which is acceptable for a personal project.
+
+5. **Requested alternatives (`textusm`, `mermaid.mq`) are not viable** — `textusm` is a separate indented-text diagram generator with no Mermaid support and no ASCII output; `mermaid.mq` is only a parser and would require building a complete renderer. They were evaluated because of file feedback, but neither satisfies R0–R3, and neither is easier than Shape E.
 
 ---
 
